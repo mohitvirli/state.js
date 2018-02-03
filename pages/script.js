@@ -1,10 +1,22 @@
+let myState = State.create({
+	range: {
+		start: 1,
+		end: 5
+	},
+	visible: true
+});
 
-const myState = State.create({a: {a: 2}});
+myState.create('range.type',    {
+	absolute: true
+});
 
-// const b = State.create({b: {b: 1}});
+myState.create({ focus: null });;
+//
+myState.on('range', (oldValue, newValue) => {
+	console.log('Value before prop change', oldValue);
+	console.log('Value after prop change', newValue);
+});
 
-myState.create('c', {b: 1});
-// b.create('b.b', 4);
-console.log(myState.prop('d', 1));
+myState.prop('range.end', 11);
+
 console.log(myState.getState());
-// console.log(b.getState());
