@@ -46,8 +46,17 @@ class StateClass {
 				get: () => {
 					return temp[keysArray[keysArray.length - 1]];
 				},
-				enumerable: true
+				enumerable: true,
+				configurable: true,
 			});
+
+			return () => {
+				Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
+					set: undefined,
+					get: undefined,
+					enumerable: false
+				});
+			};
 		}
 	}
 
@@ -58,7 +67,7 @@ class StateClass {
 		for (let i = 0; i < keys.length - 1; i++) {
 			const key = keys[i];
 			if (Object.keys(temp).indexOf(`_${key}`) !== -1) {
-				let parentCopy = this.copyObject(temp[key]);
+				let parentCopy = this.copyObject(this.truncateObject(temp[key])); // TODO: make nested check
 				for (let j = i + 1; j < keys.length - 1; j++) {
 					parentCopy = parentCopy[keys[j]];
 				}

@@ -12,11 +12,12 @@ myState.create('range.type',    {
 
 myState.create({ focus: null });;
 //
-myState.on('range', (oldValue, newValue) => {
+const unsubscribe = myState.on('range', (oldValue, newValue) => {
 	console.log('Value before prop change', oldValue);
 	console.log('Value after prop change', newValue);
 });
 
-myState.prop('range.end', 11);
+myState.prop('range.start', 2);
 
+unsubscribe();
 console.log(myState.getState());
