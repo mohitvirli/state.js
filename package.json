@@ -1,0 +1,27 @@
+{
+  "name": "state.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "eslintConfig": {
+    "root": true,
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "extends": [
+      "eslint:recommended"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohitvirli/state.js.git"
+  },
+  "author": "Mohit Virli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohitvirli/state.js/issues"
+  },
+  "homepage": "https://github.com/mohitvirli/state.js#readme"
+}
