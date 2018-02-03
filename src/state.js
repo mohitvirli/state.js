@@ -1,6 +1,6 @@
 class StateClass {
 	constructor(initialState = {}) {
-		const _state = initialState;
+		let _state = initialState;
 
 		this.getState = () => _state;
 
@@ -10,21 +10,38 @@ class StateClass {
 				else {
 					Object.assign(_state, initial);
 				}
-			} else appendObject(initial, append);
+			} else _state = this.appendObject(initial, append, _state);
 		};
 
-		const appendObject = (keys, append) => {
-			let temp = _state;
-			keys = keys.split('.');
-
-			for (let i = 0; i < keys.length - 1; i++) {
-				const key = keys[i];
-				if (!temp[key]) temp[key] = {};
-				temp = temp[key];
+		this.prop = (keys, value) => {
+			if (typeof value === 'undefined') {
+				let temp = _state;
+				keys.split('.')
+					.filter(key => key)
+					.forEach(key => {
+						if (typeof temp[key] === 'undefined') throw Error("Key doesn't exist");
+						temp = temp[key];
+					});
+				return temp;
+			} else {
+				_state = this.appendObject(keys, value, _state);
 			}
+		}
+	}
 
-			temp[keys[keys.length - 1]] = append;
-		};
+	appendObject(keys, append, state) {
+		let temp = state;
+		keys = keys.split('.');
+
+		for (let i = 0; i < keys.length - 1; i++) {
+			const key = keys[i];
+			if (typeof temp[key] === 'undefined') temp[key] = {};
+			temp = temp[key];
+		}
+
+		temp[keys[keys.length - 1]] = append;
+
+		return state;
 	}
 }
 
