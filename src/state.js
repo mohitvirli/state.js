@@ -1,7 +1,11 @@
 class StateClass {
 	constructor(initialState = {}) {
 		let _state = initialState;
-
+		let call = {
+			first: false,
+			value: {},
+			last: false
+		};
 		this.getState = () => this.truncateObject(_state);
 
 		this.create = (initial, append) => {
@@ -40,7 +44,16 @@ class StateClass {
 
 			Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
 				set: (val) => {
-					callback(temp[keysArray[keysArray.length - 1]], val);
+					call.value = !call.first ? temp[keysArray[keysArray.length - 1]] : call.value;
+					call.first = true;
+
+					setTimeout(() => {
+						if (!call.last) {
+							callback(call.value, temp[keysArray[keysArray.length - 1]]);
+							call.last = true;
+						}
+					}, 0);
+
 					temp[keysArray[keysArray.length - 1]] = val;
 				},
 				get: () => {

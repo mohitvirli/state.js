@@ -19,5 +19,6 @@ const unsubscribe = myState.on('range', (oldValue, newValue) => {
 
 myState.prop('range.start', 2);
 
+
 unsubscribe();
 console.log(myState.getState());
