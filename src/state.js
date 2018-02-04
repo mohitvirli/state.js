@@ -26,51 +26,20 @@ class StateClass {
 						if (typeof temp[key] === 'undefined') throw Error("Key doesn't exist");
 						temp = temp[key];
 					});
-				return temp;
+				return this.truncateObject(temp);
 			} else {
 				_state = this.appendObject(keys, value, _state);
 			}
 		};
 
-
 		this.on = (keys, callback) => {
+			this.onChange(keys, callback, _state, 'on');
+		};
 
-			let temp = _state;
-			const keysArray = keys.split('.');
+		this.next = (keys, callback) => {
+			this.onChange(keys, callback, _state, call);
+		};
 
-			for (let i = 0; i < keysArray.length - 1; i++) {
-				temp = temp[keysArray[i]];
-			}
-
-			Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
-				set: (val) => {
-					call.value = !call.first ? temp[keysArray[keysArray.length - 1]] : call.value;
-					call.first = true;
-
-					setTimeout(() => {
-						if (!call.last) {
-							callback(call.value, temp[keysArray[keysArray.length - 1]]);
-							call.last = true;
-						}
-					}, 0);
-
-					temp[keysArray[keysArray.length - 1]] = val;
-				},
-				get: () => {
-					return temp[keysArray[keysArray.length - 1]];
-				},
-				enumerable: true,
-				configurable: true,
-			});
-
-			return () => {
-				Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
-					set: undefined,
-					get: undefined,
-					enumerable: false
-				});
-			};
-		}
 	}
 
 	appendObject(keys, append, state) {
@@ -110,11 +79,52 @@ class StateClass {
 			});
 		};
 		setObject(visibleObject);
-		return visibleObject;
+		return visibleObject; // TODO: implement setTimeout here
 	}
 
 	copyObject(obj){
 		return JSON.parse(JSON.stringify(obj));
+	}
+
+	onChange(keys, callback, state, call){
+		let temp = state;
+		const keysArray = keys.split('.');
+
+		for (let i = 0; i < keysArray.length - 1; i++) {
+			temp = temp[keysArray[i]];
+		}
+
+		Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
+			set: (val) => {
+				if (call === 'on') {
+					callback(temp[keysArray[keysArray.length - 1]], val);
+				} else {
+					call.value = !call.first ? temp[keysArray[keysArray.length - 1]] : call.value;
+					call.first = true;
+
+					setTimeout(() => {
+						if (!call.last) {
+							callback(call.value, temp[keysArray[keysArray.length - 1]]);
+							call.last = true;
+						}
+					}, 0);  // TODO: devise some other method
+				}
+				temp[keysArray[keysArray.length - 1]] = val;
+			},
+			get: () => {
+				return temp[keysArray[keysArray.length - 1]];
+			},
+			enumerable: true,
+			configurable: true,
+		});
+
+		return () => {
+			Object.defineProperty(temp, `_${keysArray[keysArray.length - 1]}`, {
+				set: undefined,
+				get: undefined,
+				enumerable: false
+			});
+		};
 	}
 }
 
