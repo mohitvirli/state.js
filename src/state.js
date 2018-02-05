@@ -1,15 +1,8 @@
 class StateClass {
 	constructor(initialState = {}) {
 		let _state = initialState;
-		let call = {
-			first: false,
-			value: {},
-			last: false
-		};
 
 		let callbackArray = [];
-
-		let promiseArray = [];
 
 		let _lock = false;
 
@@ -33,31 +26,12 @@ class StateClass {
 						if (typeof temp[key] === 'undefined') throw Error("Key doesn't exist");
 						temp = temp[key];
 					});
-				return this.truncateObject(temp);
+				return typeof temp === 'object' ? this.truncateObject(temp) : temp;
 			} else {
 				_state = this.appendObject(keys, value, _state);
 			}
 
 			if (_lock) return this;
-		};
-
-		const executeCallbacks = () => {
-
-			const execCallback = (callbackDef) => {
-				const args = callbackDef.args;
-				callbackDef.callback(args[0], args[1]);
-			};
-
-			callbackArray.forEach(callback => {
-				const promise = new Promise((resolve) => {
-					resolve(callback);
-				});
-				promiseArray.push(promise);
-			});
-
-			Promise.all(promiseArray).then(d => {
-				console.log(d);
-			})
 		};
 
 		const onChange = (keys, callback, type) => {
@@ -127,8 +101,11 @@ class StateClass {
 
 		this.unlock = () => {
 			_lock = false;
-			const initialArgs = callbackArray[0].args[0],
+			let initialArgs = callbackArray[0].args[0],
 				finalArgs = callbackArray.pop().args[1];
+
+			initialArgs = typeof initialArgs === 'object' ? this.truncateObject(initialArgs) : initialArgs;
+			finalArgs = typeof finalArgs === 'object' ? this.truncateObject(finalArgs) : finalArgs;
 
 			callbackArray[0].callback(initialArgs, finalArgs);
 			callbackArray = [];
@@ -142,11 +119,12 @@ class StateClass {
 		for (let i = 0; i < keys.length - 1; i++) {
 			const key = keys[i];
 			if (Object.keys(temp).indexOf(`_${key}`) !== -1) {
-				let parentCopy = this.copyObject(temp[key]); // TODO: make nested check
+				const parentCopy = this.copyObject(temp[key]);
+				let tempParent = parentCopy;
 				for (let j = i + 1; j < keys.length - 1; j++) {
-					parentCopy = parentCopy[keys[j]];
+					tempParent = tempParent[keys[j]];
 				}
-				parentCopy[keys[keys.length - 1]] = append;
+				tempParent[keys[keys.length - 1]] = append;
 				temp[`_${key}`] = parentCopy;
 			}
 			temp = temp[key];
@@ -161,8 +139,8 @@ class StateClass {
 		return state;
 	}
 
-	truncateObject(state) {
-		const visibleObject = this.copyObject(state);
+	truncateObject(obj) {
+		const visibleObject = this.copyObject(obj);
 		const setObject = (obj) => {
 			Object.keys(obj).forEach(key => {
 				if(key.charAt(0) === '_') delete obj[key];
@@ -172,15 +150,18 @@ class StateClass {
 			});
 		};
 		setObject(visibleObject);
-		return visibleObject; // TODO: implement setTimeout here
+		return visibleObject;
 	}
 
 	copyObject(obj){
+		if (obj === null || typeof(obj) !== 'object') return obj;
+
 		const clone = Object.create(Object.getPrototypeOf(obj));
 
 		const props = Object.getOwnPropertyNames(obj);
 		props.forEach((key) => {
 			const desc = Object.getOwnPropertyDescriptor(obj, key);
+			if (typeof desc.value === 'object') desc.value = this.copyObject(desc.value);
 			Object.defineProperty(clone, key, desc);
 		});
 
@@ -189,3 +170,6 @@ class StateClass {
 }
 
 const State = new StateClass();
+
+export default new StateClass();
+
