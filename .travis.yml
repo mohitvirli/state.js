@@ -6,4 +6,6 @@ before_install:
   - npm install gulp -g
 install:
   - npm install
+after_success:
+  - npm run coverage
 script: gulp build
