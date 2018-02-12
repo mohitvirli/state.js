@@ -200,7 +200,7 @@ var StateClass = (function () {
 	return StateClass;
 })();
 
-exports['default'] = new StateClass();
+var State = new StateClass();
 
-// const State = new StateClass();
+exports['default'] = State;
 module.exports = exports['default'];

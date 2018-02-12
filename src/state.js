@@ -171,5 +171,5 @@ class StateClass {
 
 const State = new StateClass();
 
-export default new StateClass();
+export default State;
 
