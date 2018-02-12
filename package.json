@@ -7,7 +7,7 @@
   "scripts": {
     "build": "./node_modules/.bin/gulp test",
     "cover": "nyc mocha",
-	"coverage": "nyc report --reporter=text-lcov | coveralls"
+	"coverage": "nyc mocha && nyc report --reporter=text-lcov | coveralls"
   },
   "eslintConfig": {
     "root": true,
