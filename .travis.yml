@@ -1,0 +1,7 @@
+language: node_js
+sudo: false
+before_install:
+  - npm install gulp -g
+install:
+  - npm install
+script: gulp build
