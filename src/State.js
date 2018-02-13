@@ -169,7 +169,5 @@ class StateClass {
 	}
 }
 
-const State = new StateClass();
-
-export default State;
+export default new StateClass();
 
