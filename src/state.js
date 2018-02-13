@@ -161,7 +161,7 @@ class StateClass {
 		const props = Object.getOwnPropertyNames(obj);
 		props.forEach((key) => {
 			const desc = Object.getOwnPropertyDescriptor(obj, key);
-			if (typeof desc.value === 'object') desc.value = this.copyObject(desc.value);
+			if (typeof desc.value === "object") desc.value = this.copyObject(desc.value);
 			Object.defineProperty(clone, key, desc);
 		});
 
@@ -170,4 +170,3 @@ class StateClass {
 }
 
 export default new StateClass();
-

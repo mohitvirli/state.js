@@ -2,13 +2,31 @@ import gulp from 'gulp';
 import babel from 'gulp-babel';
 import mocha from 'gulp-mocha';
 import gutil from 'gulp-util';
+import eslint from 'gulp-eslint';
 import del from 'del';
 import webpack from 'webpack';
 import webpackConfig from './webpack.config.babel';
 
 gulp.task('default', ['build']);
 
-gulp.task('babel', () => {
+gulp.task('lint', () => {
+  return gulp.src('./src/*.js')
+    .pipe(eslint({
+      "root": true,
+      "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+      },
+      "extends": [
+        "eslint:recommended"
+      ]
+    }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .pipe(gulp.dest('src'));
+});
+
+gulp.task('babel', ['lint'], () => {
 	return gulp.src('src/*.js')
 		.pipe(babel())
 		.pipe(gulp.dest('target'));
