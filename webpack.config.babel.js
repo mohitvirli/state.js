@@ -5,7 +5,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     publicPath: '../dist/',
-    filename: 'State.min.js',
+    filename: 'state.min.js',
     library: 'State',
     libraryTarget: 'umd'
   }

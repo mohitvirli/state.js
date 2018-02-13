@@ -1,6 +1,7 @@
 # State.js
 
 [![Build Status](https://travis-ci.org/mohitvirli/state.js.svg?branch=master)](https://travis-ci.org/mohitvirli/state.js) [![Coverage Status](https://coveralls.io/repos/github/mohitvirli/state.js/badge.svg?branch=master)](https://coveralls.io/github/mohitvirli/state.js?branch=master)
+State.js is library which is useful in converting JS objects into observables and has handy API to manipulate the state.
 
 # Get Started
 A user can access the library the following ways:

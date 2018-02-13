@@ -12,8 +12,6 @@ myState.create('range.type',    {
 
 myState.create({ focus: null });
 
-
-//
 const unsubscribe = myState.on('range', (oldValue, newValue) => {
 	console.log('Value before prop change', oldValue);
 	console.log('Value after prop change', newValue);
@@ -25,4 +23,6 @@ myState
 	.prop('range.end', 3)
 	.unlock();
 
-console.log(myState.prop('range.type.absolute'));
+unsubscribe();
+
+console.log(myState.getState());

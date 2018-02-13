@@ -1,22 +1,54 @@
-class StateClass {
+/**
+ * State.js v1.0
+ */
+
+class State {
+
+  /**
+   * Constructor initialises the state with the
+   * given argument (Object)
+   * @param initialState (Object)
+   */
 	constructor(initialState = {}) {
+
+    /**
+     * @type {{}}
+     * @private property _state
+     */
 		let _state = initialState;
 
+    /**
+     * For locking unlocking state.
+     */
 		let callbackArray = [];
-
 		let _lock = false;
 
+    /**
+     * Returns the current State.
+     */
 		this.getState = () => this.truncateObject(_state);
 
+    /**
+     *
+     * @param initial (Object), initial State.
+     * @param append (Any), the object or value to be appended
+     * @returns {State}
+     */
 		this.create = (initial, append) => {
 			if (typeof append === 'undefined') {
-				if (Object.keys(_state).length === 0) return new StateClass(initial);
+				if (Object.keys(_state).length === 0) return new State(initial);
 				else {
 					Object.assign(_state, initial);
 				}
 			} else _state = this.appendObject(initial, append, _state);
 		};
 
+    /**
+     *
+     * @param keys (String), keys with dotted notation
+     * @param value (Any)
+     * @returns Object or Value of the key if second argument is not provided
+     */
 		this.prop = (keys, value) => {
 			if (typeof value === 'undefined') {
 				let temp = _state;
@@ -34,6 +66,13 @@ class StateClass {
 			if (_lock) return this;
 		};
 
+    /**
+     * Internal function to handle 'on' and 'lock' feature
+     * @param keys (String), keys with dotted notation
+     * @param callback, listener to be attached on changing the given key
+     * @param type, internal functionality for 'on' and 'lock' feature
+     * @returns unsubscribe function to detach the listener.
+     */
 		const onChange = (keys, callback, type) => {
 			let temp = _state;
 			const keysArray = keys.split('.');
@@ -47,6 +86,9 @@ class StateClass {
 					if (type === 'on' && !_lock) {
 						callback(temp[keysArray[keysArray.length - 1]], val);
 					} else {
+
+            // For .next() functionality
+
 						// call.value = !call.first ? temp[keysArray[keysArray.length - 1]] : call.value;
 						// call.first = true;
 						//
@@ -63,8 +105,6 @@ class StateClass {
 								args: [temp[keysArray[keysArray.length - 1]], val]
 							});
 						}
-						//
-						// executeCallbacks();
 					}
 
 
@@ -86,19 +126,39 @@ class StateClass {
 			};
 		};
 
+
+    /**
+     * To attach the listener to a property
+     * @param keys (String), keys with dotted notation
+     * @param callback, listener to be attached on changing the given key
+     * @returns unsubscribe function
+     */
 		this.on = (keys, callback) => {
 			return onChange(keys, callback, 'on');
 		};
 
+    /**
+     * To be implemented yet.
+     * @param keys
+     * @param callback
+     * @returns {unsubscribe}
+     */
 		this.next = (keys, callback) => {
 			return onChange(keys, callback, 'next');
 		};
 
+    /**
+     * 'lock' to lock the State till unlock is called
+     * @returns State to chain the functions
+     */
 		this.lock = () => {
 			_lock = true;
 			return this;
 		};
 
+    /**
+     * 'unlock' to unlock the State and call the onChange listener
+     */
 		this.unlock = () => {
 			_lock = false;
 			let initialArgs = callbackArray[0].args[0],
@@ -112,6 +172,13 @@ class StateClass {
 		}
 	}
 
+  /**
+   * Utility function to append the given argument
+   * @param keys (String), keys with dotted notation
+   * @param append, the value to appended
+   * @param state, the internal State
+   * @returns Modified state
+   */
 	appendObject(keys, append, state) {
 		let temp = state;
 		keys = keys.split('.');
@@ -139,6 +206,11 @@ class StateClass {
 		return state;
 	}
 
+  /**
+   * To strip the object of the getter setter functions.
+   * Needed for getState.
+   * @param obj (Object)
+   */
 	truncateObject(obj) {
 		const visibleObject = this.copyObject(obj);
 		const setObject = (obj) => {
@@ -153,6 +225,11 @@ class StateClass {
 		return visibleObject;
 	}
 
+  /**
+   * Deep cloning the object with getters and setters
+   * @param obj, object to be cloned
+   * @returns {*} Cloned object
+   */
 	copyObject(obj){
 		if (obj === null || typeof(obj) !== 'object') return obj;
 
@@ -169,4 +246,4 @@ class StateClass {
 	}
 }
 
-export default new StateClass();
+export default new State();

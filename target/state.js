@@ -1,3 +1,7 @@
+/**
+ * State.js v1.0
+ */
+
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -8,32 +12,60 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var StateClass = (function () {
-	function StateClass() {
+var State = (function () {
+
+	/**
+  * Constructor initialises the state with the
+  * given argument (Object)
+  * @param initialState (Object)
+  */
+
+	function State() {
 		var _this = this;
 
 		var initialState = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-		_classCallCheck(this, StateClass);
+		_classCallCheck(this, State);
 
+		/**
+   * @type {{}}
+   * @private property _state
+   */
 		var _state = initialState;
 
+		/**
+   * For locking unlocking state.
+   */
 		var callbackArray = [];
-
 		var _lock = false;
 
+		/**
+   * Returns the current State.
+   */
 		this.getState = function () {
 			return _this.truncateObject(_state);
 		};
 
+		/**
+   *
+   * @param initial (Object), initial State.
+   * @param append (Any), the object or value to be appended
+   * @returns {State}
+   */
 		this.create = function (initial, append) {
 			if (typeof append === 'undefined') {
-				if (Object.keys(_state).length === 0) return new StateClass(initial);else {
+				if (Object.keys(_state).length === 0) return new State(initial);else {
 					Object.assign(_state, initial);
 				}
 			} else _state = _this.appendObject(initial, append, _state);
 		};
 
+		/**
+   *
+   * @param keys (String), keys with dotted notation
+   * @param value (Any)
+   * @returns Object or Value of the key if second argument is not provided
+   */
 		this.prop = function (keys, value) {
 			if (typeof value === 'undefined') {
 				var _ret = (function () {
@@ -57,6 +89,13 @@ var StateClass = (function () {
 			if (_lock) return _this;
 		};
 
+		/**
+   * Internal function to handle 'on' and 'lock' feature
+   * @param keys (String), keys with dotted notation
+   * @param callback, listener to be attached on changing the given key
+   * @param type, internal functionality for 'on' and 'lock' feature
+   * @returns unsubscribe function to detach the listener.
+   */
 		var onChange = function onChange(keys, callback, type) {
 			var temp = _state;
 			var keysArray = keys.split('.');
@@ -70,6 +109,9 @@ var StateClass = (function () {
 					if (type === 'on' && !_lock) {
 						callback(temp[keysArray[keysArray.length - 1]], val);
 					} else {
+
+						// For .next() functionality
+
 						// call.value = !call.first ? temp[keysArray[keysArray.length - 1]] : call.value;
 						// call.first = true;
 						//
@@ -86,8 +128,6 @@ var StateClass = (function () {
 								args: [temp[keysArray[keysArray.length - 1]], val]
 							});
 						}
-						//
-						// executeCallbacks();
 					}
 
 					temp[keysArray[keysArray.length - 1]] = val;
@@ -108,19 +148,38 @@ var StateClass = (function () {
 			};
 		};
 
+		/**
+   * To attach the listener to a property
+   * @param keys (String), keys with dotted notation
+   * @param callback, listener to be attached on changing the given key
+   * @returns unsubscribe function
+   */
 		this.on = function (keys, callback) {
 			return onChange(keys, callback, 'on');
 		};
 
+		/**
+   * To be implemented yet.
+   * @param keys
+   * @param callback
+   * @returns {unsubscribe}
+   */
 		this.next = function (keys, callback) {
 			return onChange(keys, callback, 'next');
 		};
 
+		/**
+   * 'lock' to lock the State till unlock is called
+   * @returns State to chain the functions
+   */
 		this.lock = function () {
 			_lock = true;
 			return _this;
 		};
 
+		/**
+   * 'unlock' to unlock the State and call the onChange listener
+   */
 		this.unlock = function () {
 			_lock = false;
 			var initialArgs = callbackArray[0].args[0],
@@ -134,7 +193,15 @@ var StateClass = (function () {
 		};
 	}
 
-	_createClass(StateClass, [{
+	/**
+  * Utility function to append the given argument
+  * @param keys (String), keys with dotted notation
+  * @param append, the value to appended
+  * @param state, the internal State
+  * @returns Modified state
+  */
+
+	_createClass(State, [{
 		key: 'appendObject',
 		value: function appendObject(keys, append, state) {
 			var temp = state;
@@ -162,6 +229,12 @@ var StateClass = (function () {
 
 			return state;
 		}
+
+		/**
+   * To strip the object of the getter setter functions.
+   * Needed for getState.
+   * @param obj (Object)
+   */
 	}, {
 		key: 'truncateObject',
 		value: function truncateObject(obj) {
@@ -177,6 +250,12 @@ var StateClass = (function () {
 			setObject(visibleObject);
 			return visibleObject;
 		}
+
+		/**
+   * Deep cloning the object with getters and setters
+   * @param obj, object to be cloned
+   * @returns {*} Cloned object
+   */
 	}, {
 		key: 'copyObject',
 		value: function copyObject(obj) {
@@ -189,7 +268,7 @@ var StateClass = (function () {
 			var props = Object.getOwnPropertyNames(obj);
 			props.forEach(function (key) {
 				var desc = Object.getOwnPropertyDescriptor(obj, key);
-				if (typeof desc.value === 'object') desc.value = _this2.copyObject(desc.value);
+				if (typeof desc.value === "object") desc.value = _this2.copyObject(desc.value);
 				Object.defineProperty(clone, key, desc);
 			});
 
@@ -197,10 +276,8 @@ var StateClass = (function () {
 		}
 	}]);
 
-	return StateClass;
+	return State;
 })();
 
-var State = new StateClass();
-
-exports['default'] = State;
+exports['default'] = new State();
 module.exports = exports['default'];
